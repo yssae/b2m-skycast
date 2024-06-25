@@ -1,27 +1,14 @@
-import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { Observable, distinctUntilChanged, of, switchMap, tap } from 'rxjs';
-import { WeatherService } from './weather.service';
+import { Observable, of } from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
 })
 export class GeolocationService {
   
-  constructor(
-    private http: HttpClient,
-    private weatherService: WeatherService,
-  ) { }
+  constructor() { }
 
-  public dispatch() {
-    return this.getLocation().pipe(
-      distinctUntilChanged(),
-      tap((coords: GeolocationPosition) => this.saveCoordinates(coords)),
-      switchMap((location: GeolocationPosition) => this.weatherService.getCurrentWeatherByCoords(location)),
-    );
-  }
-
-  private getLocation(): Observable<GeolocationPosition> {
+  public getLocation(): Observable<GeolocationPosition> {
     const savedCoordinates = this.getSavedCoordinates();
     return savedCoordinates 
     ? of(savedCoordinates) 
@@ -38,11 +25,11 @@ export class GeolocationService {
       });
   }
 
-  private saveCoordinates(coords: GeolocationPosition): void {
+  public saveCoordinates(coords: GeolocationPosition): void {
     localStorage.setItem('coords', JSON.stringify(coords));
   }
 
-  private getSavedCoordinates(): GeolocationPosition | null {
+  public getSavedCoordinates(): GeolocationPosition | null {
     const savedCoords = localStorage.getItem('coords');
     return savedCoords ? JSON.parse(savedCoords) : null;
   }
