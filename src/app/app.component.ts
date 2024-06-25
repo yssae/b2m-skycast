@@ -21,6 +21,7 @@ export class AppComponent implements OnInit, OnDestroy {
   }
  
   ngOnInit(): void {
+    console.log(environment);
     this.geolocationService.dispatch()
       .pipe(takeUntil(this.ngUnsubscribe))
       .subscribe((response: WeatherData) => {
