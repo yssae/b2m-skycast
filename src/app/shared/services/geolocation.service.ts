@@ -24,6 +24,9 @@ export class GeolocationService {
 
 
   private getCurrentWeatherByCoords(position: GeolocationPosition) {
+    console.log(environment);
+    console.log(environment.APIKEY);
+
     const query = `?lat=${position.coords.latitude}&lon=${position.coords.longitude}&appid=${environment.APIKEY}`;
     return this.http.get<WeatherData>(this.baseApiUrl+this.geolocationAPIURL+query);
   }
