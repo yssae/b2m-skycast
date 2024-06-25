@@ -4,19 +4,21 @@
     </div>
     <div class="content">
         <div class="current-temperature">
-            <span>
-                <div class="current-value">25°</div>
-                <div class="sub-value"></div>   
+            <span class="current-value-wrapper" *ngIf="weatherService.currentWeather$ | async as weather">
+                <span class="current-value" >{{ weather.main.temp }}°</span>
             </span>
             <span class="temperature-unit">
-                C/F
+                <a (click)="toggleToCelsius()" [ngClass]="{'selected': weatherService.isInCelsius$ | async}">C</a>
+                <a (click)="toggleToFahrenheit()" [ngClass]="{'selected': !(weatherService.isInCelsius$ | async)}">F</a>
             </span>
         </div>
         <div class="weather-metrics cards">
         </div>
         <div class="air-quality">
-            <div class="current-location"></div>
-            <div class="aqi-description"></div>
+            <div class="current-location">{{ currentWeatherData.name | titlecase }}</div>
+            <div class="aqi-description" *ngIf="weatherService.currentAirQualityData$ | async as air">
+                {{ air.aqiDescription?.description }}
+            </div>
         </div>
     </div>
 </div>

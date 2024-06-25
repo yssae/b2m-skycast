@@ -13,3 +13,70 @@ input {
     border: none;
     border-bottom: 1px solid #fff;
 }
+
+.content {
+    margin-top: 30px;
+    text-align: center;
+}
+
+.current-temperature {
+    display: flex;
+    align-items: center;
+    text-align: center;
+}
+
+.current-value-wrapper {
+    width: 90%;
+    align-items: center;
+    text-align: center;
+
+}
+.current-value {
+    font-size: 65px;
+    color: #FFFFFF;
+}
+.sub-value {
+    position: relative;
+    margin-left: -25px;
+    color: #FFFFFF;
+    font-size: 16px;
+}
+
+
+.temperature-unit {
+    display: block;
+}
+.temperature-unit a {
+    cursor: pointer;
+    padding: 5px;
+    color: #696969;
+    display: block;
+    text-decoration: none;
+    font-size: 27px;
+}
+  
+.temperature-unit a.selected {
+    font-weight: bold;
+    color: #FFFFFF;
+}
+
+.weather-metrics {
+    margin-top: 30px;
+    height: 287px;
+    border: 1px solid #FFFFFF;
+}
+
+.air-quality {
+    height: 135px;
+    margin-top: 35px;
+    text-align: start;
+    color: #FFFFFF;
+}
+.current-location {
+    margin-bottom: 10px;
+    font-size: 22px;
+}
+.aqi-description {
+    font-size: 16px;
+    font-weight: 400;
+}
