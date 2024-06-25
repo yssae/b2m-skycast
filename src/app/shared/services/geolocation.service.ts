@@ -1,35 +1,24 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { environment } from 'src/environments/environment';
-
-import { WeatherData } from '../models/weather';
 import { Observable, distinctUntilChanged, of, switchMap, tap } from 'rxjs';
+import { WeatherService } from './weather.service';
 
 @Injectable({
   providedIn: 'root'
 })
 export class GeolocationService {
-  private baseApiUrl = 'https://api.openweathermap.org/data/2.5';
-  private geolocationAPIURL = '/weather'
   
-  constructor(private http: HttpClient) { }
+  constructor(
+    private http: HttpClient,
+    private weatherService: WeatherService,
+  ) { }
 
   public dispatch() {
     return this.getLocation().pipe(
       distinctUntilChanged(),
       tap((coords: GeolocationPosition) => this.saveCoordinates(coords)),
-      switchMap((location: GeolocationPosition) => this.getCurrentWeatherByCoords(location)),
+      switchMap((location: GeolocationPosition) => this.weatherService.getCurrentWeatherByCoords(location)),
     );
-  }
-
-  private getCurrentWeatherByCoords(position: GeolocationPosition) {
-    const query = `?lat=${position.coords.latitude}&lon=${position.coords.longitude}&appid=${environment.APIKEY}`;
-    return this.http.get<WeatherData>(this.baseApiUrl+this.geolocationAPIURL+query);
-  }
-
-  private getCurrentWeatherByName(location: string): Observable<WeatherData> {
-    const query = `?q=${location}&appid=${environment.APIKEY}`;
-    return this.http.get<WeatherData>(this.baseApiUrl+this.geolocationAPIURL+query);
   }
 
   private getLocation(): Observable<GeolocationPosition> {
@@ -57,4 +46,5 @@ export class GeolocationService {
     const savedCoords = localStorage.getItem('coords');
     return savedCoords ? JSON.parse(savedCoords) : null;
   }
+
 }
