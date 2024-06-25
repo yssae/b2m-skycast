@@ -1,9 +1,9 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { environment } from 'src/environments/environtment';
+import { environment } from 'src/environments/environment';
 
 import { WeatherData } from '../models/weather';
-import { Observable, map } from 'rxjs';
+import { Observable, distinctUntilChanged, switchMap, tap } from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
@@ -14,8 +14,36 @@ export class GeolocationService {
   
   constructor(private http: HttpClient) { }
 
-  getCurrentWeather(location: string): Observable<WeatherData> {
-    const query = `?q=${location}&appid=${environment.apiKey}`;
+  public dispatch() {
+    return this.getLocation().pipe(
+      distinctUntilChanged(),
+      switchMap((location: GeolocationPosition) => this.getCurrentWeatherByCoords(location)),
+      tap(response => console.log('response', response))
+    );
+  }
+
+
+  private getCurrentWeatherByCoords(position: GeolocationPosition) {
+    const query = `?lat=${position.coords.latitude}&lon=${position.coords.longitude}&appid=${environment.APIKEY}`;
     return this.http.get<WeatherData>(this.baseApiUrl+this.geolocationAPIURL+query);
+  }
+
+  private getCurrentWeatherByName(location: string): Observable<WeatherData> {
+    const query = `?q=${location}&appid=${environment.APIKEY}`;
+    return this.http.get<WeatherData>(this.baseApiUrl+this.geolocationAPIURL+query);
+  }
+
+  private getLocation(): Observable<GeolocationPosition> {
+    return new Observable((observer) => {
+      navigator.geolocation.getCurrentPosition(
+        (position: GeolocationPosition) => {
+          observer.next(position);
+          observer.complete();
+        },
+        (error: GeolocationPositionError) => {
+          observer.error(error);
+        }
+      );
+    });
   }
 }
