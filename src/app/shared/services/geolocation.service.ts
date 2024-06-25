@@ -3,7 +3,7 @@ import { Injectable } from '@angular/core';
 import { environment } from 'src/environments/environment';
 
 import { WeatherData } from '../models/weather';
-import { Observable, distinctUntilChanged, switchMap, tap } from 'rxjs';
+import { Observable, distinctUntilChanged, of, switchMap, tap } from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
@@ -17,10 +17,10 @@ export class GeolocationService {
   public dispatch() {
     return this.getLocation().pipe(
       distinctUntilChanged(),
+      tap((coords: GeolocationPosition) => this.saveCoordinates(coords)),
       switchMap((location: GeolocationPosition) => this.getCurrentWeatherByCoords(location)),
     );
   }
-
 
   private getCurrentWeatherByCoords(position: GeolocationPosition) {
     const query = `?lat=${position.coords.latitude}&lon=${position.coords.longitude}&appid=${environment.APIKEY}`;
@@ -33,16 +33,28 @@ export class GeolocationService {
   }
 
   private getLocation(): Observable<GeolocationPosition> {
-    return new Observable((observer) => {
-      navigator.geolocation.getCurrentPosition(
-        (position: GeolocationPosition) => {
-          observer.next(position);
-          observer.complete();
-        },
-        (error: GeolocationPositionError) => {
-          observer.error(error);
-        }
-      );
-    });
+    const savedCoordinates = this.getSavedCoordinates();
+    return savedCoordinates 
+    ? of(savedCoordinates) 
+    : new Observable((observer) => {
+        navigator.geolocation.getCurrentPosition(
+            (position: GeolocationPosition) => {
+              observer.next(position);
+              observer.complete();
+            },
+            (error: GeolocationPositionError) => {
+              observer.error(error);
+            }
+        );
+      });
+  }
+
+  private saveCoordinates(coords: GeolocationPosition): void {
+    localStorage.setItem('coords', JSON.stringify(coords));
+  }
+
+  private getSavedCoordinates(): GeolocationPosition | null {
+    const savedCoords = localStorage.getItem('coords');
+    return savedCoords ? JSON.parse(savedCoords) : null;
   }
 }
