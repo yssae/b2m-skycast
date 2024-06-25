@@ -18,15 +18,11 @@ export class GeolocationService {
     return this.getLocation().pipe(
       distinctUntilChanged(),
       switchMap((location: GeolocationPosition) => this.getCurrentWeatherByCoords(location)),
-      tap(response => console.log('response', response))
     );
   }
 
 
   private getCurrentWeatherByCoords(position: GeolocationPosition) {
-    console.log(environment);
-    console.log(environment.APIKEY);
-
     const query = `?lat=${position.coords.latitude}&lon=${position.coords.longitude}&appid=${environment.APIKEY}`;
     return this.http.get<WeatherData>(this.baseApiUrl+this.geolocationAPIURL+query);
   }
