@@ -1,3 +1,1 @@
-export const environment = {
-    APIKEY: ''
-}
+export const environment = {} as any;
