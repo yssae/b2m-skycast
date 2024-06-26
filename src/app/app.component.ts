@@ -32,11 +32,18 @@ export class AppComponent implements OnInit, OnDestroy {
   }
 
   private setBackground(weatherData: WeatherData): void {
-    const weather = WEATHER.find(item => {
-      const weatherCondition = weatherData.weather[0].main.toLowerCase();
-      return item.weatherCodes.includes(weatherCondition);
-    });
+    let background: string | undefined;
+    const currentTime = weatherData.dt;
+    const isPM = currentTime > weatherData.sys.sunset || currentTime < weatherData.sys.sunrise;
+    const weatherCondition = weatherData.weather[0].main.toLowerCase();
 
-    this.background = `assets/${weather?.background}` ?? 'assets/clear-blue-sky.jpg';
+    if (isPM && ["clear", "clouds"].includes(weatherCondition)) {
+      background = 'clear-night-sky.jpg';
+    } else {
+      const weather = WEATHER.find(item => item.weatherCodes.includes(weatherCondition));
+      background = weather?.background ?? 'clear-blue-sky.jpg';
+    }
+
+    this.background = `assets/${background}`;
   }
 }

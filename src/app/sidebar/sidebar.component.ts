@@ -10,9 +10,7 @@ import { FormControl } from '@angular/forms';
   styleUrls: ['./sidebar.component.scss']
 })
 export class SidebarComponent implements OnInit {
-  private ngUnsubscribe = new Subject<void>();
-  public currentWeatherData!: WeatherData;
-  
+  private ngUnsubscribe = new Subject<void>();  
   @Input() searchControl: FormControl = new FormControl('');
 
   constructor(public weatherService: WeatherService) {}
