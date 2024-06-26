@@ -17,3 +17,49 @@ html, body {
         padding: 0;
     }
 }
+
+
+// Define a map of font sizes and corresponding font weights
+$font-sizes: (
+  16: (
+    regular: 400,
+    bold: 600
+  ),
+  18: (
+    regular: 400,
+    semi-bold: 500,
+    bold: 600,
+    heavy: 700
+  ),
+  20: (
+    regular: 400,
+    bold: 600,
+    heavy: 700
+  ),
+  25: (
+    regular: 400,
+    bold: 600,
+    heavy: 700
+  ),
+  50: (
+    regular: 400,
+    bold: 600,
+    heavy: 700
+  ),
+  60: (
+    regular: 400,
+    bold: 600,
+    heavy: 700
+  ),
+  // Add more font sizes and weights as needed
+);
+
+// Loop through font sizes and weights to generate classes
+@each $size, $weights in $font-sizes {
+  @each $weight-name, $weight-value in $weights {
+    .font-#{$size}-#{$weight-name} {
+      font-size: #{$size}px;
+      font-weight: #{$weight-value};
+    }
+  }
+}
