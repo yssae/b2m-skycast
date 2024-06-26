@@ -1,0 +1,25 @@
+.forecast {
+    height: 100%;
+    width: 100%;
+    padding: 30px 50px;
+    color: #FFFFFF;
+}
+
+.header {
+    margin-top: 170px;
+}
+.title {
+    line-height: 50px;
+    text-shadow: 0 4px 4px rgba(0, 0, 0, 0.25);
+}
+.weather-description {
+    text-shadow: 0 4px 4px rgba(0, 0, 0, 0.25);
+}
+
+.content {
+    height: 200px;
+    width: calc(100% - 490px);
+    position: absolute;
+    bottom: 30px;
+    border: 1px solid #FFF;
+}

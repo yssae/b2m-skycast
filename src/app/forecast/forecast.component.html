@@ -1,1 +1,12 @@
-<div class="forecast"></div>
+<div class="forecast" *ngIf="weatherService.currentWeather$ | async as weather">
+    <div class="header">
+        <div class="title font-25-regular">Weather Forecast</div>
+        <div class="weather-description font-60-regular">
+            {{ weather.weather[0]?.description | titlecase }}
+        </div>
+    </div>
+    <div class="content">
+        <div class="date-time"></div>
+        <div class="forecast-group"></div>
+    </div>
+</div>
