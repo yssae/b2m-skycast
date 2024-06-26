@@ -2,8 +2,8 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { environment } from 'src/environments/environment';
 
-import { AirPollutionData, WeatherData } from '../models/weather';
-import { BehaviorSubject, Observable, combineLatest, distinctUntilChanged, map, switchMap, tap } from 'rxjs';
+import { AirPollutionData, Coord, WeatherData } from '../models/weather';
+import { BehaviorSubject, Observable, catchError, combineLatest, distinctUntilChanged, map, of, switchMap, tap } from 'rxjs';
 import { GeolocationService } from './geolocation.service';
 import { AQI_DESCRIPTION } from '../constants';
 
@@ -25,39 +25,58 @@ export class WeatherService {
     private geolocationService: GeolocationService,
   ) { }
 
-  public dispatch() {
+  public dispatch() {    
     return combineLatest([
-      this.geolocationService.getLocation().pipe(distinctUntilChanged()),
+      this.geolocationService.getCoords$(),
       this.isInCelsius$.pipe(distinctUntilChanged())
     ]).pipe(
-      tap(([coords, isCelsius]) => {
-        this.geolocationService.saveCoordinates(coords);
-        this.determineAQI(coords);
+      tap(([coords, isCelscoordsius]) => {
+        if(coords) {
+          this.geolocationService.saveCoordinates(coords);
+          this.determineAQI(coords);  
+        }
       }),
-      switchMap(([location, isCelsius]) => {
+      switchMap(([coords, isCelsius]) => {
         const units = isCelsius ? 'metric' : 'standard';
-        return this.getCurrentWeatherByCoords(location, units);
+        if (coords) {
+          const units = isCelsius ? 'metric' : 'standard';
+          return this.getCurrentWeatherByCoords(coords, units);
+        } else {
+          return of({} as WeatherData); // Return an empty WeatherData or handle as needed
+        }
       }),
       tap((weather: WeatherData) => this.currentWeather$.next(weather))
     );
   }
+
+  public setNewLocation(searchTerm: string) {
+    return this.getCurrentWeatherByName(searchTerm).pipe(
+      tap((weather) => {
+        this.geolocationService.clearCoordinates();
+        this.geolocationService.coords$.next(weather.coord);
+        this.isInCelsius$.next(true);
+        this.geolocationService.saveCoordinates(weather.coord)
+      }),
+      catchError((error) => of([]))
+    )
+  }
   
-  public getCurrentWeatherByName(location: string, units: string = 'metric'): Observable<WeatherData> {
+  private getCurrentWeatherByName(location: string, units: string = 'metric'): Observable<WeatherData> {
     const query = `?q=${location}&appid=${environment.APIKEY}&units=${units}`;
     return this.http.get<WeatherData>(this.baseApiUrl+this.weatherApiUrl+query);
   }
 
-  public getCurrentWeatherByCoords(position: GeolocationPosition, units: string = 'metric') {
-    const query = `?lat=${position.coords.latitude}&lon=${position.coords.longitude}&appid=${environment.APIKEY}&units=${units}`;
+  private getCurrentWeatherByCoords(coords: Coord, units: string = 'metric') {
+    const query = `?lat=${coords.lat}&lon=${coords.lon}&appid=${environment.APIKEY}&units=${units}`;
     return this.http.get<WeatherData>(this.baseApiUrl+this.weatherApiUrl+query);
   }
 
-  public getAirPollutionData(position: GeolocationPosition): Observable<AirPollutionData> {
-    const query = `?lat=${position.coords.latitude}&lon=${position.coords.longitude}&appid=${environment.APIKEY}`;
+  public getAirPollutionData(coords: Coord): Observable<AirPollutionData> {
+    const query = `?lat=${coords.lat}&lon=${coords.lon}&appid=${environment.APIKEY}`;
     return this.http.get<AirPollutionData>(this.baseApiUrl+this.airQualityApiUrl+query);
   }
 
-  private determineAQI(position: GeolocationPosition) {
+  private determineAQI(position: Coord) {
     this.getAirPollutionData(position).pipe(
       tap((air: AirPollutionData) => this.setAQIDescription(air)),
       tap((air: AirPollutionData) => this.currentAirQualityData$.next(air))
