@@ -6,7 +6,7 @@ export const WEATHER = [
     weatherCodes: ["clouds", "clear"]
   },
   {
-    background: 'dark-cloudy-sky-jpg',
+    background: 'dark-cloudy-sky.jpg',
     weatherCodes: ["atmosphere", "drizzle"]
   },
   {
@@ -15,7 +15,7 @@ export const WEATHER = [
   },
   {
     background: 'thunderstorm.jpg',
-    weatherCodes: ["rain, thunderstorm"]
+    weatherCodes: ["rain", "thunderstorm"]
   }
 ];
 
