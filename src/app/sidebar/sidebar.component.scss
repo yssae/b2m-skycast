@@ -15,7 +15,7 @@ input {
 }
 
 .content {
-    margin-top: 30px;
+    margin-top: 20%;
     text-align: center;
 }
 
@@ -62,9 +62,9 @@ input {
     display: grid;
     grid-template-columns: repeat(2, 1fr);
     grid-template-rows: repeat(3, 1fr);
-    gap: 30px;
-    margin-top: 30px;
-    height: 287px;
+    gap: 18% 10%;
+    margin-top: 20%;
+    height: 320px;
 }
 
 .air-quality {
