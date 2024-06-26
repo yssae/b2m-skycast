@@ -14,19 +14,19 @@ export interface WeatherData {
     cod: number;
 }
 
-interface Coord {
+export interface Coord {
     lon: number;
     lat: number;
 }
 
-interface Weather {
+export interface Weather {
     id: number;
     main: string;
     description: string;
     icon: string;
 }
 
-interface MainWeatherData {
+export  interface MainWeatherData {
     temp: number;
     feels_like: number;
     temp_min: number;
@@ -37,17 +37,17 @@ interface MainWeatherData {
     grnd_level?: number;
 }
 
-interface Wind {
+export interface Wind {
     speed: number;
     deg: number;
     gust: number;
 }
 
-interface Clouds {
+export interface Clouds {
     all: number;
 }
 
-interface Sys {
+export interface Sys {
     type?: number,
     id?: number,
     country: string;
