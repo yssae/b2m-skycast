@@ -17,9 +17,41 @@
 }
 
 .content {
-    height: 200px;
+    height: 300px;
     width: calc(100% - 490px);
     position: absolute;
     bottom: 30px;
-    border: 1px solid #FFF;
+}
+.forecast-group {
+    gap: 10px 35px;
+    display: flex;
+    align-items: center;
+}
+.cards {
+    padding: 15px;
+    margin-top: 20px;
+    width: 174px;
+    height: 135px;
+    border-radius: 20px;
+    background-color: rgba(0, 0, 0, 0.25);
+
+    .cards-header {
+        height: 50px;
+        display: flex;
+        align-items: center;
+    }
+    .cards-bottom {
+        margin-top: 30px;
+        display: flex;
+        span {
+            width: 50%;
+        }
+        span:nth-child(2) {
+            text-align: right;
+        }
+    }
+}
+
+.text-shadow {
+    text-shadow: 0 4px 4px rgba(0, 0, 0, 0.25);
 }

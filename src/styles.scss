@@ -20,7 +20,11 @@ html, body {
 
 
 // Define a map of font sizes and corresponding font weights
-$font-sizes: (
+$font-sizes: ( 
+  14: (
+    regular: 400,
+    bold: 600
+  ),
   16: (
     regular: 400,
     bold: 600
@@ -62,4 +66,27 @@ $font-sizes: (
       font-weight: #{$weight-value};
     }
   }
+}
+
+.custom-paginator {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: transparent !important;
+
+    .mat-mdc-paginator-outer-container .mat-mdc-paginator-container .mat-mdc-paginator-range-actions .mat-mdc-paginator-range-label {
+        display: none !important;
+    
+    }
+
+    .mat-mdc-paginator-navigation-next .mat-mdc-button-touch-target {
+        color: #FFFFFF;
+    }
+}
+
+.custom-paginator ::ng-deep .mat-paginator-range-label,
+.custom-paginator ::ng-deep .mat-paginator-page-size,
+.custom-paginator ::ng-deep .mat-paginator-page-size-options,
+.custom-paginator ::ng-deep .mat-paginator-navigation {
+    display: none !important;
 }
