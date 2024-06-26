@@ -1,6 +1,6 @@
 <div class="sidebar" *ngIf="weatherService.currentWeather$| async as weather">
     <div class="header">
-        <sc-input-field icon="search"></sc-input-field>
+        <sc-input-field icon="search" [control]="searchControl"></sc-input-field>
     </div>
     <div class="content" *ngIf="weatherService.currentAirQualityData$| async as air"  >
         <div class="current-temperature">
@@ -21,7 +21,7 @@
             <sc-cards subtext="Visibility" icon="visibility" value="{{ weather.visibility }}" units="m"></sc-cards>
         </div>
         <div class="air-quality">
-            <div class="current-location">{{ currentWeatherData.name | titlecase }}</div>
+            <div class="current-location">{{ weather.name | titlecase }}</div>
             <div class="aqi-description">
                 {{ air.aqiDescription?.description }}
             </div>
