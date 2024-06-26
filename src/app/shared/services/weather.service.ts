@@ -1,23 +1,26 @@
 import { HttpClient } from '@angular/common/http';
-import { Injectable } from '@angular/core';
+import { Injectable, OnDestroy } from '@angular/core';
 import { environment } from 'src/environments/environment';
 
-import { AirPollutionData, Coord, WeatherData } from '../models/weather';
-import { BehaviorSubject, Observable, catchError, combineLatest, distinctUntilChanged, map, of, switchMap, tap } from 'rxjs';
+import { AirPollutionData, Coord, WeatherData, WeatherForecast } from '../models/weather';
+import { BehaviorSubject, Observable, Subject, catchError, combineLatest, distinctUntilChanged, map, of, switchMap, takeUntil, tap } from 'rxjs';
 import { GeolocationService } from './geolocation.service';
 import { AQI_DESCRIPTION } from '../constants';
+import { query } from '@angular/animations';
 
 @Injectable({
   providedIn: 'root'
 })
-export class WeatherService {
+export class WeatherService implements OnDestroy {
+  private ngUnsubscribe = new Subject<void>(); 
   private baseApiUrl = 'https://api.openweathermap.org/data/2.5';
-  private weatherApiUrl = '/weather'
-  private airQualityApiUrl = '/air_pollution'
-
+  private weatherApiUrl = '/weather';
+  private weatherForecastApiUrl = '/forecast';
+  private airQualityApiUrl = '/air_pollution';
+  
   public currentWeather$ = new BehaviorSubject<WeatherData>({} as WeatherData);
   public currentAirQualityData$ = new BehaviorSubject<AirPollutionData>({} as AirPollutionData);
-
+  public weatherForecast$ = new BehaviorSubject<WeatherData[]>([] as WeatherData[]);
   public isInCelsius$ = new BehaviorSubject<boolean>(true);
 
   constructor(
@@ -25,21 +28,23 @@ export class WeatherService {
     private geolocationService: GeolocationService,
   ) { }
 
+  public ngOnDestroy(): void {
+    this.ngUnsubscribe.next();
+    this.ngUnsubscribe.unsubscribe();
+  } 
+
   public dispatch() {    
     return combineLatest([
       this.geolocationService.getCoords$(),
       this.isInCelsius$.pipe(distinctUntilChanged())
     ]).pipe(
-      tap(([coords, isCelscoordsius]) => {
-        if(coords) {
-          this.geolocationService.saveCoordinates(coords);
-          this.determineAQI(coords);  
-        }
-      }),
       switchMap(([coords, isCelsius]) => {
         const units = isCelsius ? 'metric' : 'standard';
         if (coords) {
           const units = isCelsius ? 'metric' : 'standard';
+          this.determineAQI(coords); 
+          this.geolocationService.saveCoordinates(coords);
+          this.getWeatherForecast(coords, units)
           return this.getCurrentWeatherByCoords(coords, units);
         } else {
           return of({} as WeatherData); // Return an empty WeatherData or handle as needed
@@ -60,7 +65,7 @@ export class WeatherService {
       catchError((error) => of([]))
     )
   }
-  
+
   private getCurrentWeatherByName(location: string, units: string = 'metric'): Observable<WeatherData> {
     const query = `?q=${location}&appid=${environment.APIKEY}&units=${units}`;
     return this.http.get<WeatherData>(this.baseApiUrl+this.weatherApiUrl+query);
@@ -75,11 +80,12 @@ export class WeatherService {
     const query = `?lat=${coords.lat}&lon=${coords.lon}&appid=${environment.APIKEY}`;
     return this.http.get<AirPollutionData>(this.baseApiUrl+this.airQualityApiUrl+query);
   }
-
+  
   private determineAQI(position: Coord) {
     this.getAirPollutionData(position).pipe(
       tap((air: AirPollutionData) => this.setAQIDescription(air)),
-      tap((air: AirPollutionData) => this.currentAirQualityData$.next(air))
+      tap((air: AirPollutionData) => this.currentAirQualityData$.next(air)),
+      takeUntil(this.ngUnsubscribe),
     ).subscribe();
   }
   
@@ -90,5 +96,19 @@ export class WeatherService {
     if (matchedDescription) {
       air.aqiDescription = matchedDescription;
     }
+  }
+
+  private getFutureForecast(coords: Coord, units: string = 'metric'): Observable<WeatherForecast> {
+    const query = `?lat=${coords.lat}&lon=${coords.lon}&appid=${environment.APIKEY}&units=${units}`;
+    return this.http.get<WeatherForecast>(this.baseApiUrl+this.weatherForecastApiUrl+query)
+  }
+
+  private getWeatherForecast(coords: Coord, units: string = 'metric') {
+    this.getFutureForecast(coords, units).pipe(
+      map((forecast: WeatherForecast) => forecast.list),
+      tap((weather: WeatherData[]) => this.weatherForecast$.next(weather)),
+      takeUntil(this.ngUnsubscribe),
+      catchError((error) => of([]))
+    ).subscribe();
   }
 }

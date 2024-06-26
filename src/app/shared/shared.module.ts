@@ -3,6 +3,8 @@ import { CommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MaterialModule } from './material.module';
 
+import { WeatherFormatPipe } from './pipes/weather-format.pipe'; 
+
 import { InputComponent } from './components/input/input.component';
 import { SvgIconComponent } from './components/svg-icon/svg-icon.component';
 import { CardsComponent } from './components/cards/cards.component';
@@ -12,6 +14,7 @@ import { CardsComponent } from './components/cards/cards.component';
     InputComponent,
     SvgIconComponent,
     CardsComponent,
+    WeatherFormatPipe,
   ],
   imports: [
     CommonModule,
@@ -23,6 +26,7 @@ import { CardsComponent } from './components/cards/cards.component';
     InputComponent,
     SvgIconComponent,
     CardsComponent,
+    WeatherFormatPipe,
     MaterialModule
   ]
 })

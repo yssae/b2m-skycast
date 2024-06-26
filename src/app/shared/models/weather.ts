@@ -12,6 +12,7 @@ export interface WeatherData {
     id: number;
     name: string;
     cod: number;
+    dt_txt? :string,
 }
 
 export interface Coord {
@@ -83,4 +84,27 @@ export interface AirPollutionData {
         dt: number;
     }[],
     aqiDescription?: AirQualityDescription
+}
+
+
+export interface WeatherForecast {
+    cod: string;
+    message: number;
+    cnt: number;
+    list: WeatherData[],
+    city: City,
+}
+
+export interface City {
+    id: number;
+    name: string;
+    coord: {
+        lat: number;
+        lon: number;
+    };
+    country: string;
+    population: number;
+    timezone: number;
+    sunrise: number;
+    sunset: number;
 }

@@ -6,7 +6,20 @@
         </div>
     </div>
     <div class="content">
-        <div class="date-time"></div>
-        <div class="forecast-group"></div>
+        <div class="date-time font-25-regular">{{ weather | weatherFormat }}</div>
+        <br>
+        <mat-paginator #paginator class="custom-paginator" [pageSize]="pageSize" hidePageSize="true"></mat-paginator>
+        <div class="forecast-group" *ngIf="weatherService.weatherForecast$ | async as forecasts">
+            <div class="cards" *ngFor="let forecast of weatherForecasts$ | async | slice: paginator.pageIndex * paginator.pageSize : (paginator.pageIndex + 1) * paginator.pageSize">
+                <div class="cards-header">
+                    <span class="temperature font-25-regular">{{ forecast.main?.temp }}°</span>
+                    <img src="https://openweathermap.org/img/wn/{{ forecast.weather[0].icon }}.png" alt="">    
+                </div>
+                <div class="cards-bottom font-14-regular">
+                    <span class="text-shadow">{{ forecast.dt_txt  | date:'MMMM d' }}</span>
+                    <span>{{ forecast.dt_txt | date:'h:mm a' }}</span>
+                </div>
+            </div>
+        </div>
     </div>
 </div>
