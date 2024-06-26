@@ -14,7 +14,6 @@ export class ForecastComponent implements AfterViewInit {
   public pageSize: number = 7;
 
   constructor(public weatherService: WeatherService) {
-    this.weatherService.weatherForecast$.subscribe(value => console.log(value));
     this.weatherForecasts$ = this.weatherService.weatherForecast$;
   }
 

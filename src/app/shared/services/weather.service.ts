@@ -33,7 +33,7 @@ export class WeatherService implements OnDestroy {
     this.ngUnsubscribe.unsubscribe();
   } 
 
-  public dispatch() {    
+  public dispatch(): Observable<WeatherData> {    
     return combineLatest([
       this.geolocationService.getCoords$(),
       this.isInCelsius$.pipe(distinctUntilChanged())
@@ -47,14 +47,14 @@ export class WeatherService implements OnDestroy {
           this.getWeatherForecast(coords, units)
           return this.getCurrentWeatherByCoords(coords, units);
         } else {
-          return of({} as WeatherData); // Return an empty WeatherData or handle as needed
+          return of({} as WeatherData);
         }
       }),
       tap((weather: WeatherData) => this.currentWeather$.next(weather))
     );
   }
 
-  public setNewLocation(searchTerm: string) {
+  public setNewLocation(searchTerm: string): Observable<WeatherData | never[]> {
     return this.getCurrentWeatherByName(searchTerm).pipe(
       tap((weather) => {
         this.geolocationService.clearCoordinates();
@@ -71,7 +71,7 @@ export class WeatherService implements OnDestroy {
     return this.http.get<WeatherData>(this.baseApiUrl+this.weatherApiUrl+query);
   }
 
-  private getCurrentWeatherByCoords(coords: Coord, units: string = 'metric') {
+  private getCurrentWeatherByCoords(coords: Coord, units: string = 'metric'): Observable<WeatherData> {
     const query = `?lat=${coords.lat}&lon=${coords.lon}&appid=${environment.APIKEY}&units=${units}`;
     return this.http.get<WeatherData>(this.baseApiUrl+this.weatherApiUrl+query);
   }
@@ -81,7 +81,7 @@ export class WeatherService implements OnDestroy {
     return this.http.get<AirPollutionData>(this.baseApiUrl+this.airQualityApiUrl+query);
   }
   
-  private determineAQI(position: Coord) {
+  private determineAQI(position: Coord): void {
     this.getAirPollutionData(position).pipe(
       tap((air: AirPollutionData) => this.setAQIDescription(air)),
       tap((air: AirPollutionData) => this.currentAirQualityData$.next(air)),
@@ -89,7 +89,7 @@ export class WeatherService implements OnDestroy {
     ).subscribe();
   }
   
-  private setAQIDescription(air: AirPollutionData) {
+  private setAQIDescription(air: AirPollutionData): void {
     const currentAQI = air.list[0]?.main.aqi;
     const matchedDescription = AQI_DESCRIPTION.find(aqi => currentAQI < aqi.score);
   
@@ -103,7 +103,7 @@ export class WeatherService implements OnDestroy {
     return this.http.get<WeatherForecast>(this.baseApiUrl+this.weatherForecastApiUrl+query)
   }
 
-  private getWeatherForecast(coords: Coord, units: string = 'metric') {
+  private getWeatherForecast(coords: Coord, units: string = 'metric'): void {
     this.getFutureForecast(coords, units).pipe(
       map((forecast: WeatherForecast) => forecast.list),
       tap((weather: WeatherData[]) => this.weatherForecast$.next(weather)),

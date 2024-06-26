@@ -1,4 +1,4 @@
-<div class="main-container main" [style.background-image]="'url(' + background + ')'">
+<div class="main-container main" [style.background-image]="'url(' + background + ')'" *ngIf="weatherService.currentWeather$ | async">
     <sc-sidebar class="section-sidebar"></sc-sidebar>
     <sc-forecast class="section-forecast"></sc-forecast>
 </div>

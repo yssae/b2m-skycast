@@ -15,9 +15,7 @@ export class AppComponent implements OnInit, OnDestroy {
   private ngUnsubscribe = new Subject<void>();
   public background: string = 'assets/clear-blue-sky.jpg';
 
-  constructor(
-    private weatherService: WeatherService,
-  ) {
+  constructor(public weatherService: WeatherService) {
   }
  
   public ngOnInit(): void {
