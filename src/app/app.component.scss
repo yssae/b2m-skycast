@@ -1,6 +1,15 @@
 .main-container {
     height: 100vh;
-    border: 1px solid transparent;
+    width: 100%;
+    border: none;
     background-repeat: no-repeat;
     background-size: cover;
+}
+
+.main {
+    display: flex;
+}
+
+.section-sidebar {
+    width: 380px;
 }

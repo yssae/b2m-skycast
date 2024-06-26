@@ -1,11 +1,10 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
-import { Subject, takeUntil, tap } from 'rxjs';
+import { Subject, takeUntil } from 'rxjs';
 
-import { GeolocationService } from './shared/services/geolocation.service';
+import { WeatherService } from './shared/services/weather.service';
 
 import { WeatherData } from './shared/models/weather';
-import { weather } from './shared/constants';
-import { environment } from 'src/environments/environment.development';
+import { WEATHER } from './shared/constants';
 
 @Component({
   selector: 'app-root',
@@ -13,27 +12,33 @@ import { environment } from 'src/environments/environment.development';
   styleUrls: ['./app.component.scss']
 })
 export class AppComponent implements OnInit, OnDestroy {
-  title = 'skycast';
   private ngUnsubscribe = new Subject<void>();
   public background: string = 'assets/clear-blue-sky.jpg';
 
-  constructor(private geolocationService: GeolocationService) {
+  constructor(
+    private weatherService: WeatherService,
+  ) {
   }
  
-  ngOnInit(): void {
-    this.geolocationService.dispatch()
+  public ngOnInit(): void {
+    this.weatherService.dispatch()
       .pipe(takeUntil(this.ngUnsubscribe))
       .subscribe((response: WeatherData) => {
         this.setBackground(response)
       });
   }
 
-  ngOnDestroy(): void {
+  public ngOnDestroy(): void {
     this.ngUnsubscribe.next();
     this.ngUnsubscribe.unsubscribe();
   }
 
   private setBackground(weatherData: WeatherData): void {
-    this.background = `assets/${weather.find(item => item.weatherCodes.includes(weatherData.weather[0].main.toLowerCase()))?.background}` ?? '';
+    const weather = WEATHER.find(item => {
+      const weatherCondition = weatherData.weather[0].main.toLowerCase();
+      return item.weatherCodes.includes(weatherCondition);
+    });
+
+    this.background = `assets/${weather?.background}` ?? 'assets/clear-blue-sky.jpg';
   }
 }

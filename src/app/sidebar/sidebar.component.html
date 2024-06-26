@@ -1,0 +1,30 @@
+<div class="sidebar" *ngIf="weatherService.currentWeather$| async as weather">
+    <div class="header">
+        <sc-input-field icon="search" [control]="searchControl"></sc-input-field>
+    </div>
+    <div class="content" *ngIf="weatherService.currentAirQualityData$| async as air"  >
+        <div class="current-temperature">
+            <span class="current-value-wrapper">
+                <span class="current-value" >{{ weather.main.temp }}°</span>
+            </span>
+            <span class="temperature-unit">
+                <a (click)="toggleToCelsius()" [ngClass]="{'selected': weatherService.isInCelsius$ | async}">C</a>
+                <a (click)="toggleToFahrenheit()" [ngClass]="{'selected': !(weatherService.isInCelsius$ | async)}">F</a>
+            </span>
+        </div>
+        <div class="weather-metrics cards">
+            <sc-cards subtext="Real Feel" icon="thermometer" value="{{ weather.main.temp }}°" units="{{ weatherService.isInCelsius$.value ? 'C' : 'F' }}"></sc-cards>
+            <sc-cards subtext="Winds" icon="wind" value="{{ weather.wind.speed }}" units="m/s"></sc-cards>
+            <sc-cards subtext="Humidity" icon="humidity" value="{{ weather.main.humidity }}" units="%"></sc-cards>
+            <sc-cards subtext="Pressure" icon="gauge" value="{{ weather.main.pressure }}" units="hpa"></sc-cards>
+            <sc-cards subtext="Air Quality" icon="air-quality" value="{{ air.list[0]?.main?.aqi }}"></sc-cards>
+            <sc-cards subtext="Visibility" icon="visibility" value="{{ weather.visibility }}" units="m"></sc-cards>
+        </div>
+        <div class="air-quality">
+            <div class="current-location">{{ weather.name | titlecase }}</div>
+            <div class="aqi-description">
+                {{ air.aqiDescription?.description }}
+            </div>
+        </div>
+    </div>
+</div>

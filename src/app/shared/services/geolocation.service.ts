@@ -1,48 +1,50 @@
-import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { environment } from 'src/environments/environment';
-
-import { WeatherData } from '../models/weather';
-import { Observable, distinctUntilChanged, switchMap, tap } from 'rxjs';
+import { BehaviorSubject, Observable, of } from 'rxjs';
+import { Coord } from '../models/weather';
 
 @Injectable({
   providedIn: 'root'
 })
 export class GeolocationService {
-  private baseApiUrl = 'https://api.openweathermap.org/data/2.5';
-  private geolocationAPIURL = '/weather'
-  
-  constructor(private http: HttpClient) { }
+  public coords$ = new BehaviorSubject<Coord | null>(null);
 
-  public dispatch() {
-    return this.getLocation().pipe(
-      distinctUntilChanged(),
-      switchMap((location: GeolocationPosition) => this.getCurrentWeatherByCoords(location)),
-    );
+  constructor() { 
+    this.getLocation();
   }
 
-
-  private getCurrentWeatherByCoords(position: GeolocationPosition) {
-    const query = `?lat=${position.coords.latitude}&lon=${position.coords.longitude}&appid=${environment.APIKEY}`;
-    return this.http.get<WeatherData>(this.baseApiUrl+this.geolocationAPIURL+query);
+  public getCoords$(): Observable<Coord | null> {
+    return this.coords$.asObservable();
   }
 
-  private getCurrentWeatherByName(location: string): Observable<WeatherData> {
-    const query = `?q=${location}&appid=${environment.APIKEY}`;
-    return this.http.get<WeatherData>(this.baseApiUrl+this.geolocationAPIURL+query);
-  }
-
-  private getLocation(): Observable<GeolocationPosition> {
-    return new Observable((observer) => {
+  public getLocation(): void {
+    const savedCoordinates = this.getSavedCoordinates();
+    if (savedCoordinates) {
+      this.coords$.next(savedCoordinates);
+    } else {
       navigator.geolocation.getCurrentPosition(
         (position: GeolocationPosition) => {
-          observer.next(position);
-          observer.complete();
+          const coords = { lat: position.coords.latitude, lon: position.coords.longitude };
+          console.log('coords geo', coords)
+          this.coords$.next(coords);
         },
         (error: GeolocationPositionError) => {
-          observer.error(error);
+          console.error(error);
         }
       );
-    });
+    }
   }
+
+  public saveCoordinates(coords: Coord): void {
+    localStorage.setItem('coords', JSON.stringify(coords));
+  }
+
+  public clearCoordinates(): void {
+    localStorage.removeItem('coords');
+  }
+
+  public getSavedCoordinates(): Coord | null {
+    const savedCoords = localStorage.getItem('coords');
+    return savedCoords ? JSON.parse(savedCoords) : null;
+  }
+
 }

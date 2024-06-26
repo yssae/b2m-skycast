@@ -1,0 +1,19 @@
+<div class="container">
+    <label>{{ label }}</label>
+    <span class="wrapper">
+        <input 
+            [class]="class"
+            [type]="type" 
+            [placeholder]="placeholder"
+            [formControl]="control"
+            [matAutocomplete]="auto"
+            matInput
+        >
+        <mat-autocomplete #auto="matAutocomplete" panelClass="sky-autocomplete-panel">
+            <mat-option *ngFor="let option of filteredOptions | async" [value]="option">
+              {{ option }}
+            </mat-option>
+        </mat-autocomplete>
+        <sc-svg-icon *ngIf="icon" [icon]="icon"></sc-svg-icon>
+    </span>
+</div>
