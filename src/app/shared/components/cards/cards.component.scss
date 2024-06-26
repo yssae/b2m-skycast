@@ -1,0 +1,29 @@
+.container {
+    min-height: 59px;
+}
+
+.main {    
+    display: flex;
+    align-items: baseline;
+    gap: 5px;
+    text-align: start;
+    padding-left: 25px;
+    font-size: 30px;
+    color: #FFFFFF;
+
+    .units {
+        font-size: 12px;
+    }
+}
+
+.sub {
+    margin-top: 8px;
+    display: flex;
+    color: #FFFFFF;
+    gap: 8px;
+
+    div {
+        width: 90%;
+        text-align: start;
+    }
+}

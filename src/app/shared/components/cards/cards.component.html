@@ -1,0 +1,10 @@
+<div class="container">
+    <div class="main">
+        <div>{{ value }}</div>
+        <div class="units" *ngIf="units">{{ units }}</div>
+    </div>
+    <div class="sub">
+        <sc-svg-icon [icon]="icon" [width]="width" [height]="height"></sc-svg-icon>
+        <div>{{ subtext }}</div>
+    </div>
+</div>
