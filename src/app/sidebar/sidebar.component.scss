@@ -29,7 +29,6 @@ input {
     width: 90%;
     align-items: center;
     text-align: center;
-
 }
 .current-value {
     font-size: 65px;
@@ -41,7 +40,6 @@ input {
     color: #FFFFFF;
     font-size: 16px;
 }
-
 
 .temperature-unit {
     display: block;
@@ -61,9 +59,12 @@ input {
 }
 
 .weather-metrics {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    grid-template-rows: repeat(3, 1fr);
+    gap: 20px 30px;
     margin-top: 30px;
     height: 287px;
-    border: 1px solid #FFFFFF;
 }
 
 .air-quality {
